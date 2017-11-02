@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/so_chatty'
+
+#   $ sochatty client
+#   $ sochatty client -h localhost
+#   $ sochatty client -h localhost -p 8888
+#   $ sochatty help
+#   https://github.com/erikhuda/thor/wiki/Method-Options
+
+module SoChatty
+  module CLI
+    class Main < Thor
+      desc 'client', 'startup a SoChatty client'
+      method_option :host, required: false, type: 'string', banner: 'SoChatty host',
+                           aliases: '-h', desc: 'Host address for SoChatty server'
+      method_option :port, required: false, type: 'numeric', banner: 'SoChatty port',
+                           aliases: '-p', desc: 'Port for SoChatty server'
+      def client
+        Client.new(options)
+      end
+
+      default_command :client
+    end
+  end
+end
+
+SoChatty::CLI::Main.start(ARGV)
