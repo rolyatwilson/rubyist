@@ -20,8 +20,9 @@ module SoChatty
     end
 
     def start(options = {})
-      example = options.fetch(:example, :example1)
+      example = "example#{options.fetch(:example, 1)}"
       raise "Invalid code example: #{example}" unless self.class.private_method_defined?(example)
+      puts "starting #{example}"
       send(example)
     rescue SystemExit, Interrupt
       puts 'Safely shutting down...'
@@ -31,16 +32,14 @@ module SoChatty
     private
 
     def example1
-      puts 'starting example1...'
-      s = TCPServer.new(port)
+      s = server
       conn = s.accept
       send_date_and_close(conn)
       s.close
     end
 
     def example2
-      puts 'starting example2...'
-      s = TCPServer.new(port)
+      s = server
       until stop
         conn = s.accept
         send_date_and_close(conn)
@@ -49,32 +48,52 @@ module SoChatty
     end
 
     def example3
-      puts 'starting example3...'
-      s = TCPServer.new(port)
+      s = server
       until stop
         conn = s.accept
-        name = user_name(conn)
+        name = welcome(conn)
         send_date_and_close(conn, name: name)
       end
       s.close
     end
 
     def example4
-      puts 'starting example4...'
-      s = TCPServer.new(port)
+      s = server
       while !stop && (conn = s.accept)
-        puts 'server: connection accepted'
         Thread.new(conn) do |c|
-          name = user_name(c)
+          name = welcome(c)
           send_date_and_close(c, name: name)
         end
       end
       s.close
     end
 
-    def user_name(connection)
+    def example5
+      s = server
+      chatters = []
+      while !stop && (conn = s.accept)
+        Thread.new(conn) do |c|
+          name = welcome(c)
+          broadcast("#{name} has joined", chatters)
+          chatters << c
+          begin
+            puts "about to listen for input"
+            loop do
+              line = c.gets.chomp
+              broadcast("#{name}: #{line}", chatters)
+            end
+          rescue EOFError
+            c.close
+            chatters.delete(c)
+            broadcast("#{name} has left", chatters)
+          end
+        end
+      end
+    end
+
+    def welcome(connection)
       connection.puts 'Hi. What is your name? '
-      connection.gets.chomp
+      connection.readline.chomp
     end
 
     def send_date_and_close(connection, options = {})
@@ -82,6 +101,17 @@ module SoChatty
       connection.puts "Hi#{name.empty? ? '' : ", #{name}"}. Here's the date."
       connection.puts `date`
       connection.close
+    end
+
+    def broadcast(message, chatters)
+      puts "broadcast called: #{message}"
+      chatters.each do |c|
+        c.puts message
+      end
+    end
+
+    def server
+      TCPServer.new(port)
     end
   end
 end

@@ -10,7 +10,7 @@ module SoChatty
     end
 
     def start(options = {})
-      example = options.fetch(:example, :example1)
+      example = "example#{options.fetch(:example, 1)}"
       puts "example: #{example}"
       raise "Invalid code example: #{example}" unless self.class.private_method_defined?(example)
       send(example)
@@ -19,7 +19,7 @@ module SoChatty
     private
 
     def example1
-      s = TCPSocket.new(host, port)
+      s = server
       s.each_line do |line|
         puts line
       end
@@ -31,7 +31,7 @@ module SoChatty
     end
 
     def example3
-      s = TCPSocket.new(host, port)
+      s = server
 
       # server sends exactly 1 welcome message and asks for the user's name... hack
       s.each_line do |line|
@@ -49,6 +49,36 @@ module SoChatty
 
     def example4
       example3
+    end
+
+    def example5
+      s = server
+      listener = listen(s)
+      talker = talk(s)
+      listener.join
+      talker.join
+    end
+
+    def listen(server)
+      Thread.new(server) do |s|
+        loop do
+          line = s.gets.chomp
+          puts line
+        end
+      end
+    end
+
+    def talk(server)
+      Thread.new(server) do |s|
+        loop do
+          line = $stdin.gets.chomp
+          s.puts(line.to_s)
+        end
+      end
+    end
+
+    def server
+      TCPSocket.new(host, port)
     end
   end
 end
