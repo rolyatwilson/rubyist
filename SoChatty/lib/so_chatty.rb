@@ -2,6 +2,7 @@
 
 # rubygems
 require 'rubygems'
+require 'socket'
 require 'thor'
 
 # sochatty

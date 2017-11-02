@@ -17,11 +17,22 @@ module SoChatty
                            aliases: '-h', desc: 'Host address for SoChatty server'
       method_option :port, required: false, type: 'numeric', banner: 'SoChatty port',
                            aliases: '-p', desc: 'Port for SoChatty server'
+      method_option :example, required: false, type: 'string', banner: 'Example code to run',
+                              aliases: '-e', desc: 'Example code to run'
       def client
-        Client.new(options)
+        Client.new(options).start(options)
       end
 
-      default_command :client
+      desc 'server', 'startup a SoChatty server'
+      method_option :port, required: false, type: 'numeric', banner: 'SoChatty port',
+                           aliases: '-p', desc: 'Port for SoChatty server'
+      method_option :example, required: false, type: 'string', banner: 'Example code to run',
+                              aliases: '-e', desc: 'Example code to run'
+      def server
+        Server.new(options).start(options)
+      end
+
+      default_command :server
     end
   end
 end
