@@ -2,9 +2,12 @@
 
 # rubygems
 require 'rubygems'
+require 'logger'
 require 'socket'
 require 'thor'
 
 # sochatty
-require_relative 'so_chatty/client.rb'
-require_relative 'so_chatty/server.rb'
+require_relative 'so_chatty/logging'
+require_relative 'so_chatty/client'
+require_relative 'so_chatty/server'
+

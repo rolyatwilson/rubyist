@@ -2,6 +2,8 @@
 
 module SoChatty
   class Server
+    include Logging
+
     class << self
       def default_host
         @default_host = 'localhost'
@@ -22,10 +24,9 @@ module SoChatty
     def start(options = {})
       example = "example#{options.fetch(:example, 1)}"
       raise "Invalid code example: #{example}" unless self.class.private_method_defined?(example)
-      puts "starting #{example}"
+      logger.info("Server: starting #{example}")
       send(example)
     rescue SystemExit, Interrupt
-      puts 'Safely shutting down...'
       @stop = true
     end
 
@@ -77,7 +78,6 @@ module SoChatty
           broadcast("#{name} has joined", chatters)
           chatters << c
           begin
-            puts "about to listen for input"
             loop do
               line = c.gets.chomp
               broadcast("#{name}: #{line}", chatters)
@@ -92,11 +92,13 @@ module SoChatty
     end
 
     def welcome(connection)
+      logger.info("Server: connection accepted, asking user for name")
       connection.puts 'Hi. What is your name? '
       connection.readline.chomp
     end
 
     def send_date_and_close(connection, options = {})
+      logger.info("Server: sending user the date and disconnecting")
       name = options.fetch(:name, '')
       connection.puts "Hi#{name.empty? ? '' : ", #{name}"}. Here's the date."
       connection.puts `date`
@@ -104,7 +106,7 @@ module SoChatty
     end
 
     def broadcast(message, chatters)
-      puts "broadcast called: #{message}"
+      logger.info("Server: broadcasting \"#{message}\"")
       chatters.each do |c|
         c.puts message
       end
