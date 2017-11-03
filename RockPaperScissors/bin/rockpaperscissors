@@ -12,7 +12,7 @@ module RockPaperScissors
   module CLI
     class Main < Thor
       desc 'client', 'rock paper scissors'
-      method_option :host, required: false, type: 'numeric', banner: 'RockPaperScissors host',
+      method_option :host, required: false, type: 'string', banner: 'RockPaperScissors host',
                     aliases: '-h', desc: 'RockPaperScissors host'
       method_option :port, required: false, type: 'numeric', banner: 'RockPaperScissors port',
                     aliases: '-p', desc: 'RockPaperScissors host'
