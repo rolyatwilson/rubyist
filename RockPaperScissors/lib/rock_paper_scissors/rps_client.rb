@@ -15,7 +15,7 @@ module RockPaperScissors
 
       # server asks for player name
       puts s.gets.chomp
-      name = $stdin.gets.chomp
+      name = STDIN.gets.chomp
       s.puts(name)
 
       # waiting for opponent AND
@@ -29,7 +29,7 @@ module RockPaperScissors
       # make sure the user inputs a valid move
       move = nil
       loop do
-        move = $stdin.gets.chomp.downcase
+        move = STDIN.gets.chomp.downcase
         break if %w[rock paper scissors].include?(move)
         puts line
       end

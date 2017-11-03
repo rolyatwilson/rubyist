@@ -3,6 +3,5 @@
 source 'https://rubygems.org'
 
 group :development, :test do
-  gem 'rubocop', '~> 0.51.0'
   gem 'thor', '~> 0.20.0'
 end

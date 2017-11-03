@@ -2,6 +2,8 @@
 
 module RockPaperScissors
   class RPSServer
+    include Logging
+
     class << self
       def default_host
         @default_host ||= 'localhost'
@@ -25,7 +27,7 @@ module RockPaperScissors
     def start(options)
       example = "example#{options.fetch(:example, 1)}"
       raise "Invalid code example: #{example}" unless self.class.private_method_defined?(example)
-      puts("Server: starting #{example}")
+      logger.info("Server: starting #{example}")
       send(example)
     end
 
@@ -37,6 +39,7 @@ module RockPaperScissors
 
       2.times do
         conn = s.accept
+        logger.info('Server: connection accepted')
         threads << Thread.new(conn) do |c|
           Thread.current[:conn] = c
           Thread.current[:name] = welcome(c)
@@ -53,12 +56,15 @@ module RockPaperScissors
       rps2 = RPS.new(b[:move])
       winner = rps1.play(rps2)
       if rps1 == winner
+        logger.info("server: #{a[:name]} beat #{b[:name]}: #{rps1.move} vs #{rps2.move}")
         a[:conn].puts("You win! You beat #{b[:name]} with #{rps1.move} vs #{rps2.move}")
         b[:conn].puts("You lost! #{a[:name]} destroyed you with #{rps1.move} vs #{rps2.move}")
       elsif rps2 == winner
+        logger.info("server: #{b[:name]} beat #{a[:name]}: #{rps2.move} vs #{rps1.move}")
         b[:conn].puts("You win! You beat #{a[:name]} with #{rps2.move} vs #{rps1.move}")
         a[:conn].puts("You lost! #{b[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
       else
+        logger.info("server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
         a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
         b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
       end
@@ -66,10 +72,11 @@ module RockPaperScissors
 
     def example2
       s = TCPServer.new(port)
-      while true
+      loop do
         threads = []
         2.times do
           conn = s.accept
+          logger.info('Server: connection accepted')
           threads << Thread.new(conn) do |c|
             Thread.current[:conn] = c
             Thread.current[:name] = welcome(c)
@@ -86,12 +93,15 @@ module RockPaperScissors
         rps2 = RPS.new(b[:move])
         winner = rps1.play(rps2)
         if rps1 == winner
+          logger.info("Server: #{a[:name]} beat #{b[:name]}: #{rps1.move} vs #{rps2.move}")
           a[:conn].puts("You win! You beat #{b[:name]} with #{rps1.move} vs #{rps2.move}")
           b[:conn].puts("You lost! #{a[:name]} destroyed you with #{rps1.move} vs #{rps2.move}")
         elsif rps2 == winner
+          logger.info("Server: #{b[:name]} beat #{a[:name]}: #{rps2.move} vs #{rps1.move}")
           b[:conn].puts("You win! You beat #{a[:name]} with #{rps2.move} vs #{rps1.move}")
           a[:conn].puts("You lost! #{b[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
         else
+          logger.info("Server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
           a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
           b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
         end
@@ -112,7 +122,7 @@ module RockPaperScissors
       Thread.new do
         while (conn = server.accept)
           Thread.new(conn) do |c|
-            puts "server: connection accepted"
+            logger.info('Server: connection accepted')
 
             # push connections into a queue
             name = welcome(c)
@@ -149,17 +159,10 @@ module RockPaperScissors
         player   = i.zero? ? player1 : player2
         opponent = i.zero? ? player2 : player1
 
-        puts "server: i: #{i}"
-        puts "server: thread loop for player: #{player}, opponent: #{opponent}"
-
         threads << Thread.new(player, opponent) do |p, o|
           p[:conn].puts("Your opponent is #{o[:name]}. Your move? (rock, paper, scissors) ")
-          move = p[:conn].gets.chomp
-          puts("server: received move #{move} from #{p[:name]}")
-          p[:move] = move
-          puts "server: next thing to do is send final waiting..."
+          p[:move] = p[:conn].gets.chomp
           p[:conn].puts("Waiting for #{o[:name]}...")
-          puts "server: sent final waiting..."
         end
       end
 
@@ -168,26 +171,20 @@ module RockPaperScissors
       a.join
       b.join
 
-      puts "server: players made their moves"
-      puts "server: p1.move: #{player1[:move]}"
-      puts "server: p2.move: #{player2[:move]}"
-
-      puts "server: let's build the game objects"
       rps1 = RPS.new(player1[:move])
       rps2 = RPS.new(player2[:move])
 
-      puts "server: who won?"
       winner = rps1.play(rps2)
       if rps1 == winner
-        puts "server: p1 is the winner"
+        logger.info("Server: #{player1[:name]} beat #{player2[:name]}: #{rps1.move} vs #{rps2.move}")
         player1[:conn].puts("You win! You beat #{player2[:name]} with #{rps1.move} vs #{rps2.move}")
         player2[:conn].puts("You lost! #{player1[:name]} destroyed you with #{rps1.move} vs #{rps2.move}")
       elsif rps2 == winner
-        puts "server: p2 is the winner"
+        logger.info("Server: #{player2[:name]} beat #{player1[:name]}: #{rps2.move} vs #{rps1.move}")
         player2[:conn].puts("You win! You beat #{player1[:name]} with #{rps2.move} vs #{rps1.move}")
         player1[:conn].puts("You lost! #{player2[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
       else
-        puts "server: it is a tie"
+        logger.info("Server: #{player1[:name]} tied with #{player2[:name]}: #{rps1.move} vs #{rps2.move}")
         player1[:conn].puts("You tied with #{player2[:name]}! #{rps1.move} vs #{rps2.move}")
         player2[:conn].puts("You tied with #{player1[:name]}! #{rps2.move} vs #{rps1.move}")
       end

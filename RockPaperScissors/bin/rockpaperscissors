@@ -3,13 +3,15 @@
 
 require_relative '../lib/rock_paper_scissors'
 
-#   $ rockpaperscissors -e 3
-#   $ toothready help
+#   $ rockpaperscissors server -p 8888
+#   $ rockpaperscissors client -p 8888
+#   $ rockpaperscissors client -h localhost -p 8888
+#   $ rockpaperscissors help
 #   https://github.com/erikhuda/thor/wiki/Method-Options
 module RockPaperScissors
   module CLI
     class Main < Thor
-      desc 'rps', 'rock paper scissors'
+      desc 'client', 'rock paper scissors'
       method_option :host, required: false, type: 'numeric', banner: 'RockPaperScissors host',
                     aliases: '-h', desc: 'RockPaperScissors host'
       method_option :port, required: false, type: 'numeric', banner: 'RockPaperScissors port',
