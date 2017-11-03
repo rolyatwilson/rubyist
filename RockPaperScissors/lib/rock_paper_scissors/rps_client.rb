@@ -19,11 +19,15 @@ module RockPaperScissors
       s.puts(name)
 
       # server asks for move (rock paper scissors)
-      line = nil
-      2.times do
-        line = s.gets.chomp
-        puts line
-      end
+      # line = nil
+      # 2.times do
+      #   line = s.gets.chomp
+      #   puts line
+      #
+
+      # server identifies opponent, asks for move (rock paper scissors)
+      line = s.gets.chomp
+      puts line
 
       # make sure the user inputs a valid move
       move = nil
@@ -37,6 +41,8 @@ module RockPaperScissors
 
       # play the move
       s.puts(move)
+
+      puts "send the move"
 
       # did you win?
       puts s.gets.chomp # waiting for opponent
