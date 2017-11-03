@@ -17,7 +17,7 @@ module RockPaperScissors
     def initialize(options = {})
       @host = RPSServer.default_host
       @port = options.fetch(:port, RPSServer.default_port)
-      start
+      start2
     end
 
     def start
@@ -122,7 +122,7 @@ module RockPaperScissors
             Thread.current[:number] = n + 1
             Thread.current[:conn] = c
             Thread.current[:name] = welcome(c)
-            c.puts "Welcome, #{Thread.current[:name]}! Waiting for opponent..."
+            # c.puts "Welcome, #{Thread.current[:name]}! Waiting for opponent..."
             c.puts 'Your move? (rock, paper, scissors)'
             Thread.current[:move] = c.gets.chomp
             c.puts 'Waiting for opponent...'
@@ -158,7 +158,7 @@ module RockPaperScissors
           Thread.current[:number] = n + 1
           Thread.current[:conn] = c
           Thread.current[:player] = welcome(c)
-          c.puts "Welcome, #{Thread.current[:player]}! Waiting for opponent..."
+          # c.puts "Welcome, #{Thread.current[:player]}! Waiting for opponent..."
           c.puts 'Your move? (rock, paper, scissors)'
           Thread.current[:move] = c.gets.chomp
           c.puts 'Waiting for opponent...'
@@ -186,6 +186,7 @@ module RockPaperScissors
     def welcome(connection)
       connection.puts 'Hi. What is your name? '
       name = connection.readline.chomp
+      connection.puts 'Waiting for opponent...'
       name.empty? ? 'Anonymous Coward' : name
     end
   end

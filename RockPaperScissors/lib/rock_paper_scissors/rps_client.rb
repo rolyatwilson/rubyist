@@ -18,16 +18,13 @@ module RockPaperScissors
       name = $stdin.gets.chomp
       s.puts(name)
 
+      # waiting for opponent AND
       # server asks for move (rock paper scissors)
-      # line = nil
-      # 2.times do
-      #   line = s.gets.chomp
-      #   puts line
-      #
-
-      # server identifies opponent, asks for move (rock paper scissors)
-      line = s.gets.chomp
-      puts line
+      line = nil
+      2.times do
+        line = s.gets.chomp
+        puts line
+      end
 
       # make sure the user inputs a valid move
       move = nil
