@@ -3,6 +3,7 @@
 # rubygems
 require 'rubygems'
 require 'logger'
+require 'os'
 require 'socket'
 require 'thor'
 

@@ -10,6 +10,9 @@ module RockPaperScissors
       start
     end
 
+    # nothing to see here, really
+    # this just listens when the server should be talking,
+    # and this talks when the server should be listening
     def start
       s = TCPSocket.new(host, port)
 
@@ -39,7 +42,8 @@ module RockPaperScissors
 
       # did you win?
       puts s.gets.chomp # waiting for opponent
-      puts s.gets.chomp # game results
+      results = s.gets.chomp # game results
+      `say #{results}` if OS.mac?
     end
   end
 end

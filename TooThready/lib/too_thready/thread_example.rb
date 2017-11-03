@@ -10,6 +10,8 @@ module TooThready
 
     private
 
+    # what will be printed to the console?
+    # when a process dies, so does all of its threads
     def example1
       puts 'Outside: 1'
       Thread.new do
@@ -20,6 +22,8 @@ module TooThready
       puts 'Outside: 2'
     end
 
+    # how do we keep the process from dying?
+    # now what will be printed to the console?
     def example2
       puts 'Outside: 1'
       t = Thread.new do
@@ -31,6 +35,7 @@ module TooThready
       t.join
     end
 
+    # error handling on threads
     def example3
       puts 'Trying to read in some files...'
       t = Thread.new do
@@ -51,6 +56,8 @@ module TooThready
       puts 'Finished!'
     end
 
+    # we can start and stop threads whenever we want to
+    # we can inspect the status of threads
     def example4
       t = Thread.new do
         puts '[Starting thread]'
@@ -66,6 +73,7 @@ module TooThready
       t.join
     end
 
+    # we can add keys to the thread
     def example5
       t = Thread.new do
         Thread.current[:message] = 'Hello, World!'

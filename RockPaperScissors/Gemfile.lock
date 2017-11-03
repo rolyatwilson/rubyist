@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    os (1.0.0)
+    thor (0.20.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  os (~> 1.0.0)
+  thor (~> 0.20.0)
+
+BUNDLED WITH
+   1.15.4

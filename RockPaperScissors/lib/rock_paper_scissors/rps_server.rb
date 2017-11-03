@@ -19,8 +19,11 @@ module RockPaperScissors
     def initialize(options = {})
       @host = RPSServer.default_host
       @port = options.fetch(:port, RPSServer.default_port)
+
+      # queue and lock used only in example3
       @queue = []
       @lock = Mutex.new
+
       start(options)
     end
 
@@ -33,10 +36,14 @@ module RockPaperScissors
 
     private
 
+    # server allows 2 people to play 1 game, and then it shuts down, because "why not?"
+    # notice that saves player data directly to thread keys
+    # who wants to play?
     def example1
       s = TCPServer.new(port)
       threads = []
 
+      # spin up a thread for each connection to keep the server from blocking on each user's input
       2.times do
         conn = s.accept
         logger.info('Server: connection accepted')
@@ -48,10 +55,12 @@ module RockPaperScissors
           c.puts 'Waiting for opponent...'
         end
       end
+
       a, b = threads
       a.join
       b.join
 
+      # compare each player's move and broadcast a winner
       rps1 = RPS.new(a[:move])
       rps2 = RPS.new(b[:move])
       winner = rps1.play(rps2)
@@ -70,9 +79,15 @@ module RockPaperScissors
       end
     end
 
+    # server does not shutdown after a game is played
+    # server only allows 2 connections at a time, so people gonna wait
+    # who wants to play? who wants to wait?
     def example2
       s = TCPServer.new(port)
+
+      # that's right, copy/pasta wrapped in an infinite loop
       loop do
+        # spin up a thread for each connection to keep the server from blocking on each user's input
         threads = []
         2.times do
           conn = s.accept
@@ -89,6 +104,7 @@ module RockPaperScissors
         a.join
         b.join
 
+        # compare each player's move and broadcast a winner
         rps1 = RPS.new(a[:move])
         rps2 = RPS.new(b[:move])
         winner = rps1.play(rps2)
@@ -108,16 +124,21 @@ module RockPaperScissors
       end
     end
 
+    # server allows multiple connection to queue
+    # server allows multiple games to run concurrently
+    # server only shuts down when it receives an interrupt (ctrl+c) or if i messed up and it crashes
+    # who all wants to play?
     def example3
       s = TCPServer.new(port)
-      l = lobby(s) # queue up connections
-      m = matchmaking # pair up players and start games
+      l = lobby(s)
+      m = matchmaking
 
       # block the main thread so we don't kill all the things
       l.join
       m.join
     end
 
+    # queue up connections
     def lobby(server)
       Thread.new do
         while (conn = server.accept)
@@ -134,6 +155,7 @@ module RockPaperScissors
       end
     end
 
+    # pair up players and start games
     def matchmaking
       Thread.new do
         loop do
@@ -153,6 +175,10 @@ module RockPaperScissors
       end
     end
 
+    # this is mostly copy/pasta with some hackery to handle each
+    # connection on individual threads.
+    # i ditched thread keys here, and should have gone a step
+    # further and just created a player class.
     def play(player1, player2)
       threads = []
       2.times do |i|

@@ -39,7 +39,7 @@ module SoChatty
         puts line
         break
       end
-      name = $stdin.gets.chomp
+      name = STDIN.gets.chomp
 
       s.puts name
       s.each_line do |line|
@@ -65,6 +65,7 @@ module SoChatty
         loop do
           line = s.gets.chomp
           puts line
+          `say #{line}` if OS.mac?
         end
       end
     end
@@ -72,7 +73,7 @@ module SoChatty
     def talk(server)
       Thread.new(server) do |s|
         loop do
-          line = $stdin.gets.chomp
+          line = STDIN.gets.chomp
           s.puts(line.to_s)
         end
       end

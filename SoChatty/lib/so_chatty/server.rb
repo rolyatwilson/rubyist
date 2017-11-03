@@ -33,6 +33,7 @@ module SoChatty
 
     private
 
+    # server stops immediately after sending a message
     def example1
       s = server
       conn = s.accept
@@ -40,6 +41,8 @@ module SoChatty
       s.close
     end
 
+    # server does not stop
+    # server only accepts 1 connection at a time
     def example2
       s = server
       until stop
@@ -49,6 +52,8 @@ module SoChatty
       s.close
     end
 
+    # server sends and receives data from the connection
+    # server still accepts only 1 connection at a time
     def example3
       s = server
       until stop
@@ -59,6 +64,7 @@ module SoChatty
       s.close
     end
 
+    # server spins up a new thread for each connection, allowing multiple connections
     def example4
       s = server
       while !stop && (conn = s.accept)
@@ -70,6 +76,8 @@ module SoChatty
       s.close
     end
 
+    # server allows multiple connections
+    # server broadcasts messages to all connections
     def example5
       s = server
       chatters = []
