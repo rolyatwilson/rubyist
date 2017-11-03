@@ -43,6 +43,7 @@ module RockPaperScissors
       # did you win?
       puts s.gets.chomp # waiting for opponent
       results = s.gets.chomp # game results
+      puts results
       `say #{results}` if OS.mac?
     end
   end
