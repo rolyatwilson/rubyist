@@ -21,6 +21,8 @@ module RockPaperScissors
       desc 'server', 'rock paper scissors'
       method_option :port, required: false, type: 'numeric', banner: 'port to run Server on',
                     aliases: '-p', desc: 'port to run Server on'
+      method_option :example, required: false, type: 'numeric', banner: 'example code to run',
+                    aliases: '-e', desc: 'example code to run'
       def server
         RPSServer.new(options)
       end

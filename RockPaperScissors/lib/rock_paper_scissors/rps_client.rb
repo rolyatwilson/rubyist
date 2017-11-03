@@ -34,18 +34,12 @@ module RockPaperScissors
         puts line
       end
 
-      puts "about to play the move"
-
       # play the move
       s.puts(move)
-
-      puts "send the move"
 
       # did you win?
       puts s.gets.chomp # waiting for opponent
       puts s.gets.chomp # game results
-
-      puts "how did we get here???"
     end
   end
 end
