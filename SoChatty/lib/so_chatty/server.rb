@@ -91,7 +91,7 @@ module SoChatty
               line = c.gets.chomp
               broadcast("#{name}: #{line}", chatters)
             end
-          rescue EOFError
+          rescue
             c.close
             chatters.delete(c)
             broadcast("#{name} has left", chatters)
