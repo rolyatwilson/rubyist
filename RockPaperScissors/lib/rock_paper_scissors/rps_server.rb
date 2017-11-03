@@ -64,6 +64,11 @@ module RockPaperScissors
       rps1 = RPS.new(a[:move])
       rps2 = RPS.new(b[:move])
       winner = rps1.play(rps2)
+      unless winner
+        logger.info("server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
+        a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
+        b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
+      end
       if rps1 == winner
         logger.info("server: #{a[:name]} beat #{b[:name]}: #{rps1.move} vs #{rps2.move}")
         a[:conn].puts("You win! You beat #{b[:name]} with #{rps1.move} vs #{rps2.move}")
@@ -72,10 +77,6 @@ module RockPaperScissors
         logger.info("server: #{b[:name]} beat #{a[:name]}: #{rps2.move} vs #{rps1.move}")
         b[:conn].puts("You win! You beat #{a[:name]} with #{rps2.move} vs #{rps1.move}")
         a[:conn].puts("You lost! #{b[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
-      else
-        logger.info("server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
-        a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
-        b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
       end
     end
 
@@ -108,6 +109,11 @@ module RockPaperScissors
         rps1 = RPS.new(a[:move])
         rps2 = RPS.new(b[:move])
         winner = rps1.play(rps2)
+        unless winner
+          logger.info("Server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
+          a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
+          b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
+        end
         if rps1 == winner
           logger.info("Server: #{a[:name]} beat #{b[:name]}: #{rps1.move} vs #{rps2.move}")
           a[:conn].puts("You win! You beat #{b[:name]} with #{rps1.move} vs #{rps2.move}")
@@ -116,10 +122,6 @@ module RockPaperScissors
           logger.info("Server: #{b[:name]} beat #{a[:name]}: #{rps2.move} vs #{rps1.move}")
           b[:conn].puts("You win! You beat #{a[:name]} with #{rps2.move} vs #{rps1.move}")
           a[:conn].puts("You lost! #{b[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
-        else
-          logger.info("Server: #{a[:name]} tied with #{b[:name]}: #{rps1.move} vs #{rps2.move}")
-          a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
-          b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
         end
       end
     end
@@ -201,6 +203,11 @@ module RockPaperScissors
       rps2 = RPS.new(player2[:move])
 
       winner = rps1.play(rps2)
+      unless winner
+        logger.info("Server: #{player1[:name]} tied with #{player2[:name]}: #{rps1.move} vs #{rps2.move}")
+        player1[:conn].puts("You tied with #{player2[:name]}! #{rps1.move} vs #{rps2.move}")
+        player2[:conn].puts("You tied with #{player1[:name]}! #{rps2.move} vs #{rps1.move}")
+      end
       if rps1 == winner
         logger.info("Server: #{player1[:name]} beat #{player2[:name]}: #{rps1.move} vs #{rps2.move}")
         player1[:conn].puts("You win! You beat #{player2[:name]} with #{rps1.move} vs #{rps2.move}")
@@ -209,10 +216,6 @@ module RockPaperScissors
         logger.info("Server: #{player2[:name]} beat #{player1[:name]}: #{rps2.move} vs #{rps1.move}")
         player2[:conn].puts("You win! You beat #{player1[:name]} with #{rps2.move} vs #{rps1.move}")
         player1[:conn].puts("You lost! #{player2[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
-      else
-        logger.info("Server: #{player1[:name]} tied with #{player2[:name]}: #{rps1.move} vs #{rps2.move}")
-        player1[:conn].puts("You tied with #{player2[:name]}! #{rps1.move} vs #{rps2.move}")
-        player2[:conn].puts("You tied with #{player1[:name]}! #{rps2.move} vs #{rps1.move}")
       end
     end
 
