@@ -6,9 +6,9 @@ require_relative '../lib/so_chatty'
 #   $ sochatty client
 #   $ sochatty client -h localhost
 #   $ sochatty client -h localhost -p 8888
+#   $ sochatty client -h localhost -p 8888 -e 5
 #   $ sochatty help
 #   https://github.com/erikhuda/thor/wiki/Method-Options
-
 module SoChatty
   module CLI
     class Main < Thor
@@ -20,7 +20,7 @@ module SoChatty
       method_option :example, required: false, type: 'numeric', banner: 'Example code to run',
                               aliases: '-e', desc: 'Example code to run'
       def client
-        Client.new(options).start(options)
+        Client.new(options)
       end
 
       desc 'server', 'startup a SoChatty server'
@@ -29,7 +29,7 @@ module SoChatty
       method_option :example, required: false, type: 'numeric', banner: 'Example code to run',
                               aliases: '-e', desc: 'Example code to run'
       def server
-        Server.new(options).start(options)
+        Server.new(options)
       end
 
       default_command :server

@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/too_thready'
+
+#   $ toothready -e 3
+#   $ toothready help
+#   https://github.com/erikhuda/thor/wiki/Method-Options
+module TooThready
+  module CLI
+    class Main < Thor
+      desc 'example', 'runs TooThready example'
+      method_option :example, required: false, type: 'numeric', banner: 'Example code to run',
+                    aliases: '-e', desc: 'Example code to run'
+      def example
+        ThreadExample.new.start(options)
+      end
+
+      desc 'fiber', 'runs TooThready Fiber example'
+      def fiber
+        FiberExample.new.start
+      end
+
+      default_command :example
+    end
+  end
+end
+
+TooThready::CLI::Main.start(ARGV)

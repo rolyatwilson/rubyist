@@ -7,6 +7,7 @@ module SoChatty
     def initialize(options = {})
       @host = options.fetch(:host, Server.default_host)
       @port = options.fetch(:port, Server.default_port)
+      start(options)
     end
 
     def start(options = {})

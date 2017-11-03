@@ -6,11 +6,11 @@ module SoChatty
 
     class << self
       def default_host
-        @default_host = 'localhost'
+        @default_host ||= 'localhost'
       end
 
       def default_port
-        @default_port = 8888
+        @default_port ||= 8888
       end
     end
 
@@ -19,6 +19,7 @@ module SoChatty
     def initialize(options = {})
       @host = Server.default_host
       @port = options.fetch(:port, Server.default_port)
+      start(options)
     end
 
     def start(options = {})

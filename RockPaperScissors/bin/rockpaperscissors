@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/rock_paper_scissors'
+
+#   $ rockpaperscissors -e 3
+#   $ toothready help
+#   https://github.com/erikhuda/thor/wiki/Method-Options
+module RockPaperScissors
+  module CLI
+    class Main < Thor
+      desc 'rps', 'rock paper scissors'
+      method_option :host, required: false, type: 'numeric', banner: 'RockPaperScissors host',
+                    aliases: '-h', desc: 'RockPaperScissors host'
+      method_option :port, required: false, type: 'numeric', banner: 'RockPaperScissors port',
+                    aliases: '-p', desc: 'RockPaperScissors host'
+      def client
+        RPSClient.new(options)
+      end
+
+      desc 'server', 'rock paper scissors'
+      method_option :port, required: false, type: 'numeric', banner: 'port to run Server on',
+                    aliases: '-p', desc: 'port to run Server on'
+      def server
+        RPSServer.new(options)
+      end
+
+      default_command :server
+    end
+  end
+end
+
+RockPaperScissors::CLI::Main.start(ARGV)
