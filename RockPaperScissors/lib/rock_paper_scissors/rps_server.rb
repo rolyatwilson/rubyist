@@ -12,11 +12,13 @@ module RockPaperScissors
       end
     end
 
-    attr_reader :host, :port
+    attr_reader :host, :port, :queue, :lock
 
     def initialize(options = {})
       @host = RPSServer.default_host
       @port = options.fetch(:port, RPSServer.default_port)
+      @queue = []
+      @lock = Mutex.new
       start(options)
     end
 
@@ -33,12 +35,11 @@ module RockPaperScissors
       s = TCPServer.new(port)
       threads = []
 
-      2.times do |n|
+      2.times do
         conn = s.accept
         threads << Thread.new(conn) do |c|
-          Thread.current[:number] = n + 1
           Thread.current[:conn] = c
-          Thread.current[:player] = welcome(c)
+          Thread.current[:name] = welcome(c)
           c.puts 'Your move? (rock, paper, scissors)'
           Thread.current[:move] = c.gets.chomp
           c.puts 'Waiting for opponent...'
@@ -52,14 +53,14 @@ module RockPaperScissors
       rps2 = RPS.new(b[:move])
       winner = rps1.play(rps2)
       if rps1 == winner
-        a[:conn].puts("You win! #{rps1.move} vs #{rps2.move}")
-        b[:conn].puts("You lose! #{rps2.move} vs #{rps1.move}")
+        a[:conn].puts("You win! You beat #{b[:name]} with #{rps1.move} vs #{rps2.move}")
+        b[:conn].puts("You lost! #{a[:name]} destroyed you with #{rps1.move} vs #{rps2.move}")
       elsif rps2 == winner
-        b[:conn].puts("You win! #{rps2.move} vs #{rps1.move}")
-        a[:conn].puts("You lose! #{rps1.move} vs #{rps2.move}")
+        b[:conn].puts("You win! You beat #{a[:name]} with #{rps2.move} vs #{rps1.move}")
+        a[:conn].puts("You lost! #{b[:name]} destroyed you with with #{rps2.move} vs #{rps1.move}")
       else
-        a[:conn].puts("It's a tie! #{rps1.move} vs #{rps2.move}")
-        b[:conn].puts("It's a tie! #{rps2.move} vs #{rps1.move}")
+        a[:conn].puts("You tied with #{b[:name]}! #{rps1.move} vs #{rps2.move}")
+        b[:conn].puts("You tied with #{a[:name]}! #{rps2.move} vs #{rps1.move}")
       end
     end
 
@@ -67,10 +68,9 @@ module RockPaperScissors
       s = TCPServer.new(port)
       while true
         threads = []
-        2.times do |n|
+        2.times do
           conn = s.accept
           threads << Thread.new(conn) do |c|
-            Thread.current[:number] = n + 1
             Thread.current[:conn] = c
             Thread.current[:name] = welcome(c)
             c.puts 'Your move? (rock, paper, scissors)'
@@ -100,36 +100,40 @@ module RockPaperScissors
 
     def example3
       s = TCPServer.new(port)
+      l = lobby(s) # queue up connections
+      m = matchmaking # pair up players and start games
 
-      semaphore = Mutex.new
-      queue = []
-      game_threads = []
+      # block the main thread so we don't kill all the things
+      l.join
+      m.join
+    end
 
-      # start a thread to handling incoming connections
-      lobby = Thread.new do
-        while (conn = s.accept)
+    def lobby(server)
+      Thread.new do
+        while (conn = server.accept)
           Thread.new(conn) do |c|
             puts "server: connection accepted"
 
             # push connections into a queue
             name = welcome(c)
-            semaphore.synchronize do
+            lock.synchronize do
               queue << { conn: c, name: name }
             end
           end
         end
       end
+    end
 
-      # on another thread, poll the queue and start games
-      matchmaking = Thread.new do
+    def matchmaking
+      Thread.new do
         loop do
-          sleep 1 # poll waiting
+          sleep 0.3 # poll waiting
           next unless queue.length >= 2
 
           # start a game
           Thread.new do
             player1 = player2 = nil
-            semaphore.synchronize do
+            lock.synchronize do
               player1 = queue.shift
               player2 = queue.shift
             end
@@ -137,12 +141,6 @@ module RockPaperScissors
           end
         end
       end
-
-      # cleanup old threads...
-
-      # block the main thread so we don't kill all the things
-      lobby.join
-      matchmaking.join
     end
 
     def play(player1, player2)
