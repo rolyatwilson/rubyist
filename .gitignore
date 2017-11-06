@@ -1,2 +1,5 @@
 .idea
 .DS_Store
+
+# do not commit secret sauce
+**/secrets.yml

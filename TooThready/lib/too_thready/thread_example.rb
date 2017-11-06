@@ -19,6 +19,7 @@ module TooThready
         sleep 1
         puts 'Inside: 2'
       end
+      sleep 0.5
       puts 'Outside: 2'
     end
 
@@ -61,12 +62,14 @@ module TooThready
     def example4
       t = Thread.new do
         puts '[Starting thread]'
+        puts "[what's my status]: #{Thread.current.status}"
         Thread.stop
         puts '[Resuming thread]'
       end
       puts "Status of thread: #{t.status}"
       puts "Is the thread stopped?: #{t.stop?}"
       puts "Is the thread alive?: #{t.alive?}"
+      puts "Status of thread: #{t.status}"
       puts
       puts 'Waking up thread and joining it...'
       t.wakeup
@@ -77,10 +80,12 @@ module TooThready
     def example5
       t = Thread.new do
         Thread.current[:message] = 'Hello, World!'
+        Thread.current[:blah] = {foo: :bar}
       end
       t.join
       p t.keys
       puts t[:message]
+      puts t[:blah]
     end
   end
 end

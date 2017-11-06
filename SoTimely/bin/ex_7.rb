@@ -52,52 +52,47 @@ end
 # Why iso8601?
 # https://canvas.instructure.com/doc/api/live#!/courses.json/create_new_course_post_2
 
-require_relative '../lib/so_timely'
+require_relative '../lib/sotimely'
 
 def course_args(start_at, end_at)
   { 'course[name]'     => "So Timely #{Time.now.iso8601}",
     'course[start_at]' => start_at,
-    'course[end_at]'   => end_at }
+    'course[end_at]'   => end_at,
+    'offer'            => true }
 end
 
-course_0   = SoTimely::CanvasAPI.create_course course_args((t_now - 10_000_000).strftime('%d %m %Y'),
-                                                           (t_now + 10_000_000).strftime('%Y %m %d'))
+api = SoTimely::CanvasAPI.new
+
+course_0   = api.create_course course_args((t_now - 10_000_000).strftime('%d %m %Y'), (t_now + 10_000_000).strftime('%Y %m %d'))
 start_at_0 = course_0[:start_at] #
 end_at_0   = course_0[:end_at]   #
 
 
-course_1   = SoTimely::CanvasAPI.create_course course_args((t_now - 10_000_000).iso8601,
-                                                           (t_now + 10_000_000).iso8601)
+course_1   = api.create_course course_args((t_now - 10_000_000).iso8601, (t_now + 10_000_000).iso8601)
 start_at_1 = course_1[:start_at] #
 end_at_1   = course_1[:end_at]   #
 
-course_2   = SoTimely::CanvasAPI.create_course course_args(t_now.rfc2822,
-                                                           t_now.rfc2822)
+course_2   = api.create_course course_args(t_now.rfc2822, t_now.rfc2822)
 start_at_2 = course_2[:start_at] #
 end_at_2   = course_2[:end_at]   #
 
-course_3   = SoTimely::CanvasAPI.create_course course_args(t_now.httpdate,
-                                                           t_now.httpdate)
+course_3   = api.create_course course_args(t_now.httpdate, t_now.httpdate)
 start_at_3 = course_3[:start_at] #
 end_at_3   = course_3[:end_at]   #
 
-course_4   = SoTimely::CanvasAPI.create_course course_args(t_now.getlocal.iso8601,
-                                                           t_now.getlocal.iso8601)
+course_4   = api.create_course course_args(t_now.getlocal.iso8601, t_now.getlocal.iso8601)
 start_at_4 = course_4[:start_at] #
 end_at_4   = course_4[:end_at]   #
 
-course_5   = SoTimely::CanvasAPI.create_course course_args((today << 12).strftime('%Y-%m-%d'),
-                                                           (today >> 12).strftime('%Y-%m-%d'))
+course_5   = api.create_course course_args((today << 12).strftime('%Y-%m-%d'), (today >> 12).strftime('%Y-%m-%d'))
 start_at_5 = course_5[:start_at] #
 end_at_5   = course_5[:end_at]   #
 
-course_6   = SoTimely::CanvasAPI.create_course course_args(today.next_month.iso8601,
-                                                           today.next_year.iso8601)
+course_6   = api.create_course course_args(today.next_month.iso8601, today.next_year.iso8601)
 start_at_6 = course_6[:start_at] #
 end_at_6   = course_6[:end_at]   #
 
-course_7   = SoTimely::CanvasAPI.create_course course_args((today << 12).iso8601,
-                                                           (today << 1).iso8601)
+course_7   = api.create_course course_args((today << 12).iso8601, (today << 1).iso8601)
 start_at_7 = course_7[:start_at] #
 end_at_7   = course_7[:end_at]   #
 
